@@ -50,14 +50,19 @@ def precipitation():
 
     """Return a list of precipitation dates and measurements"""
     # Query all passengers
-    results = session.query(measurement.prcp, measurement.date).all()
-    
-
+    results = session.query(measurement.date, measurement.prcp).all()
     session.close()
 
-    # Convert list of tuples into normal list
-    precip_all = list(np.ravel(results))
-    return jsonify(precip_all)
+
+    prcp_all = []
+    for date, prcp in results:
+        precip_dict = {}
+        precip_dict["date"] = date
+        precip_dict["precipitation"] = prcp
+        
+        prcp_all.append(precip_dict)
+
+    return jsonify(prcp_all)
 
 
 @app.route("/api/v1.0/stations")
@@ -74,6 +79,10 @@ def station():
     session.close()
 
     # Convert list of tuples into normal list
-    station_all = list(np.ravel(result))
+    station_all = list(np.unique(result))
     return jsonify(station_all)
 
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
