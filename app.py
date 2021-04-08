@@ -20,7 +20,7 @@ Base.prepare(engine, reflect=True)
 
 # Save reference to the table
 measurement = Base.classes.measurement
-station = Base.classes.station
+
 
 
 #################################################
@@ -44,36 +44,36 @@ def welcome():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    return jsonify(prcp)
+  
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    """Return a list of passenger data including the name, age, and sex of each passenger"""
+    """Return a list of precipitation dates and measurements"""
     # Query all passengers
-    results = session.query(measurements.prcp).all()
-
-
-
-
-
-
-
-
+    results = session.query(measurement.prcp, measurement.date).all()
+    
 
     session.close()
 
-    # Create a dictionary from the row data and append to a list of all_passengers
-    date_prcp = []
-    for name, age, sex in results:
-        passenger_dict = {}
-        passenger_dict["name"] = name
-        passenger_dict["age"] = age
-        passenger_dict["sex"] = sex
-        all_passengers.append(passenger_dict)
-
-    return jsonify(all_passengers)
+    # Convert list of tuples into normal list
+    precip_all = list(np.ravel(results))
+    return jsonify(precip_all)
 
 
+@app.route("/api/v1.0/stations")
+def station():
+  
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    """Return a list of stations"""
+    # Query all passengers
+    result = session.query(measurement.station).all()
+    
+
+    session.close()
+
+    # Convert list of tuples into normal list
+    station_all = list(np.ravel(result))
+    return jsonify(station_all)
+
